@@ -4,12 +4,12 @@
   import { Open, Sheet, download } from "../lib";
   import example from "./_example.json";
   
-  let open;
-  let currentValue;
-  let selected;
-  let active = 0;
-  let sheets = [example];
-  let sheetNames = [];
+  let open = $state();
+  let currentValue = $state();
+  let selected = $state();
+  let active = $state(0);
+  let sheets = $state([example]);
+  let sheetNames = $state([]);
 
   function onload(loadedSheets, loadedSheetNames) {
     sheets = loadedSheets;
@@ -18,15 +18,15 @@
 
   const decode = XLSX.utils.decode_cell;
 
-  $: sheet = sheets[active];
+  let sheet = $derived(sheets[active]);
 
-  $: decoded = selected?.[0] ? decode(selected[0]) : { c: 0, r: 0 };
+  let decoded = $derived(selected?.[0] ? decode(selected[0]) : { c: 0, r: 0 });
 </script>
 
 <Open bind:open {onload} />
 
 <button class="btn secondary" onclick={(_) => open.click()}>
-  <i class="fas fa-folder-open mr-1" />Open .xlsx File
+  <i class="fas fa-folder-open mr-1"></i>Open .xlsx File
 </button>
 
 {#if sheet}
@@ -34,7 +34,7 @@
     class="btn secondary"
     onclick={(_) => download(sheets, "example" + ".xlsx")}
   >
-    <i class="fas fa-download mr-1" />Download file
+    <i class="fas fa-download mr-1"></i>Download file
   </button>
 {/if}
 
@@ -56,13 +56,13 @@
   />
 {/if}
 
-<a href="https://github.com/ticruz38/svelte-sheets" class="github-link">
-  <span />
+<a href="https://github.com/ticruz38/svelte-sheets" class="github-link" aria-label="View source on GitHub">
+  <span></span>
 </a>
 
 <div class="sheet-names">
   {#each sheetNames as sn, i (sn)}
-    <span class:selected={sheet.sheetName == sn} onclick={(_) => (active = i)}
+    <span class:selected={sheet.sheetName == sn} onclick={(_) => (active = i)} role="button" tabindex="0"
       >{sn}</span
     >
   {/each}

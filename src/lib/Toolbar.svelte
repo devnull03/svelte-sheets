@@ -2,15 +2,21 @@
   import XLSX from "xlsx";
   import { convert } from "./convert";
 
-  export let sheetNames;
-  export let sheets = [];
-  export let active = 0;
+  let { sheetNames = $bindable(), sheets = $bindable([]), active = $bindable(0) }: {
+    sheetNames?: any;
+    sheets?: any[];
+    active?: number;
+  } = $props();
 
   // declare all possible table object
-  let fileinput: any;
-  let files: any;
+  let fileinput: any = $state();
+  let files: any = $state();
 
-  $: files && files[0] && reader && reader.readAsArrayBuffer(files[0]);
+  $effect(() => {
+    if (files && files[0] && reader) {
+      reader.readAsArrayBuffer(files[0]);
+    }
+  });
 
   let reader;
   if (FileReader != undefined) {
@@ -38,12 +44,14 @@
 />
 
 <div class="flex">
-  <button on:click={(_) => fileinput.click()}>Open XLSX file</button>
+  <button onclick={(_) => fileinput.click()}>Open XLSX file</button>
   {#each sheetNames as sn, i}
     <div
-      on:click={(_) => {
+      onclick={(_) => {
         active = i;
       }}
+      role="button"
+      tabindex="0"
       class={"ml-4 cursor-pointer " + (i == active ? "active" : "")}
     >
       {sn}

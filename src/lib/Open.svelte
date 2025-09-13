@@ -2,15 +2,21 @@
   import XLSX from "xlsx";
   import { convert } from "./convert";
 
-  export let onload: (sheets: any[], sheetNames: any[]) => void;
-  export let sheetNames;
-  export let sheets = [];
-  export let open: any;
+  let { onload, sheetNames = $bindable(), sheets = $bindable([]), open = $bindable() }: {
+    onload: (sheets: any[], sheetNames: any[]) => void;
+    sheetNames?: any;
+    sheets?: any[];
+    open?: any;
+  } = $props();
 
   // declare all possible table object
-  let files: any;
+  let files: any = $state();
 
-  $: files && files[0] && reader && reader.readAsArrayBuffer(files[0]);
+  $effect(() => {
+    if (files && files[0] && reader) {
+      reader.readAsArrayBuffer(files[0]);
+    }
+  });
 
   let reader;
   if (typeof FileReader != "undefined") {
