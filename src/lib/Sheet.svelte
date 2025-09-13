@@ -17,112 +17,73 @@
     pasteSelection,
   } from "./utilities";
 
-  export let data: (string | number | boolean)[][] = [];
-  export let columns: any[] = [];
-  let xcolumns: any[] = [];
-  export let rows: any[] = [];
-  let xrows: any[] = [];
-  export let mergeCells: Record<string, number[]> = {};
-  // export let rows: Record<string, any> = [];
-  export let style: { [cellIndex: string]: string } = {};
-  export let selected: [string, string] = null; // either null, or coordinates [[x, y], [x, y]]
-  export let extended: [string, string] = null;
-  export let currentValue: string | number | boolean = "";
-  export let clipboard: [string, string];
+  let { 
+    data = $bindable([]), 
+    columns = $bindable([]), 
+    rows = $bindable([]), 
+    mergeCells = $bindable({}), 
+    style = $bindable({}), 
+    selected = $bindable(null), 
+    extended = $bindable(null), 
+    currentValue = $bindable(""), 
+    clipboard = $bindable(), 
+    options,
+    startY = $bindable(0),
+    startX = $bindable(0),
+    endY = $bindable(0),
+    endX = $bindable(0)
+  }: {
+    data?: (string | number | boolean)[][];
+    columns?: any[];
+    rows?: any[];
+    mergeCells?: Record<string, number[]>;
+    style?: { [cellIndex: string]: string };
+    selected?: [string, string];
+    extended?: [string, string];
+    currentValue?: string | number | boolean;
+    clipboard?: [string, string];
+    options: Config;
+    startY?: number;
+    startX?: number;
+    endY?: number;
+    endX?: number;
+  } = $props();
 
-  export let options: Config;
+  let xrows = $derived(
+    endY > data.length ? Array.from({ length: endY - data.length }) : []
+  );
 
-  const encode = ({ c, r }) =>
-    XLSX.utils.encode_cell({ c: Number(c), r: Number(r) });
-  const decode = XLSX.utils.decode_cell;
-  $: decoded = selected
-    ? [decode(selected[0]), decode(selected[1])]
-    : [
-        { c: 0, r: 0 },
-        { c: 0, r: 0 },
-      ];
-  $: config = {
-    ...defaultconfig,
-    ...(options || {}),
-  };
-  // Containers
-  let history: string[] = [];
-  let highlighted = [];
-
-  // Internal controllers
-  let cmdz = false;
-  let selection = false;
-  let extension = false;
-  let cursor = null;
-  let historyIndex = 0;
-  let ignoreEvents = false;
-  let ignoreHistory = false;
-  let edition = null;
-  let hashString = null;
-  let resizing = null;
-  let dragging = null;
-  let keypressed = {};
-
-  // $: ((_) => {
-  //   history = history.slice(0, historyIndex);
-  //   history.push(data);
-  //   historyIndex = history.length;
-  // })();
-
-  // implement virtual list
-  export let startY = 0;
-  export let startX = 0;
-  export let endY = 0;
-  export let endX = 0;
-  // virtual list state
-  let height_map = [];
-  let width_map = [];
-  let rowElements;
-  let colElements;
-  let viewport;
-  let contents;
-  let viewport_height = 0;
-  let viewport_width = 0;
-  let visibleY: { i: number; data: (string | number | boolean)[] }[];
-  let visibleX: { i: number; data: (string | number | boolean)[] }[];
-  let mounted;
-  let top = 0;
-  let left = 0;
-  let top_buffer = 2500;
-  let bottom_buffer = 2500;
-  let left_buffer = 2500;
-  let right_buffer = 2500;
-  let bottom = 0;
-  let right = 0;
-  let average_height;
-  let average_width;
-
-  $: xrows =
-    endY > data.length ? Array.from({ length: endY - data.length }) : [];
-
-  $: xcolumns =
+  let xcolumns = $derived(
     endX > columns.length
       ? Array.from({ length: endX - columns.length }, (v, i) => ({}))
-      : [];
+      : []
+  );
 
-  $: visibleY = [...data, ...xrows].slice(startY, endY).map((d, i) => {
-    return { i: i + startY, data: d };
+  // Update visibleY and visibleX based on derived values
+  $effect(() => {
+    visibleY = [...data, ...xrows].slice(startY, endY).map((d, i) => {
+      return { i: i + startY, data: d };
+    });
   });
 
-  $: visibleX = [...columns, ...xcolumns].slice(startX, endX).map((d, i) => {
-    return { i: i + startX, data: d };
+  $effect(() => {
+    visibleX = [...columns, ...xcolumns].slice(startX, endX).map((d, i) => {
+      return { i: i + startX, data: d };
+    });
   });
 
   // whenever `items` changes, invalidate the current heightmap
-  $: if (mounted) refresh(data, viewport_height, viewport_width);
+  $effect(() => {
+    if (mounted) refresh(data, viewport_height, viewport_width);
+  });
 
-  $: {
+  $effect(() => {
     try {
       currentValue = data[decoded[0].r][decoded[0].c];
     } catch (e) {
       currentValue = "";
     }
-  }
+  });
 
   function getColumnsWidth(i: number) {
     return Number(
@@ -214,10 +175,10 @@
 
   // $: scrollLeft = viewport?.scrollLeft;
   // $: scrollTop = viewport?.scrollTop;
-  let scrollLeft;
-  let scrollTop;
+  let scrollLeft = $state();
+  let scrollTop = $state();
 
-  $: (function scrollX() {
+  $effect(() => {
     if (!scrollLeft || !colElements) return;
     // if (!scrollLeft) ;
     // horizontal scrolling
@@ -249,9 +210,9 @@
     average_width = x / endX;
     // while (c < columns.length) width_map[c++] = average_width;
     right = remaining * average_width;
-  })();
+  });
 
-  $: (function scrollY() {
+  $effect(() => {
     if (!scrollTop || !rowElements) return;
 
     // vertical scrolling
@@ -283,7 +244,7 @@
     average_height = y / endY;
     // while (r < data.length) height_map[r++] = average_height;
     bottom = remaining * average_height;
-  })();
+  });
 
   function handle_scroll(e) {
     scrollTop = viewport.scrollTop;
@@ -504,7 +465,7 @@
     menuY = e.screenY - 70;
   }
   // initialize and refactor data
-  $: (() => {
+  $effect(() => {
     if (data[0]) {
       if (!Array.isArray(data[0])) {
         columns = Object.keys(data[0]).map((k) => ({ name: k }));
@@ -541,24 +502,24 @@
         }
       }
     }
-  })();
+  });
   // square selection
-  let tops;
-  let rights;
-  let lefts;
-  let bottoms;
-  let topextend;
-  let rightextend;
-  let leftextend;
-  let bottomextend;
-  let colLine;
-  let rowLine;
-  let square;
-  let squareX;
-  let squareY;
-  let topLeft;
-  let bottomRight;
-  $: {
+  let tops = $state();
+  let rights = $state();
+  let lefts = $state();
+  let bottoms = $state();
+  let topextend = $state();
+  let rightextend = $state();
+  let leftextend = $state();
+  let bottomextend = $state();
+  let colLine = $state();
+  let rowLine = $state();
+  let square = $state();
+  let squareX = $state();
+  let squareY = $state();
+  let topLeft = $state();
+  let bottomRight = $state();
+  $effect(() => {
     if (extension && extended) {
       let tl = (selected && decode(extended[0])) || { c: 0, r: 0 };
       let br = (selected && decode(extended[1])) || { c: 0, r: 0 };
@@ -599,12 +560,12 @@
         bottom - top
       }px; left: ${left}px; top: ${top}px`;
     }
-  }
+  });
 
-  let selectWidth: number;
-  let selectHeight: number;
+  let selectWidth: number = $state();
+  let selectHeight: number = $state();
 
-  $: {
+  $effect(() => {
     if (mounted) {
       let tl = (selected && decode(selected[0])) || { c: 0, r: 0 };
       let br = (selected && decode(selected[1])) || { c: 0, r: 0 };
@@ -646,7 +607,7 @@
       selectWidth = right - left;
       selectHeight = bottom - top;
     }
-  }
+  });
   // history logic
 
   function historyPush(data, rows, columns, style) {
