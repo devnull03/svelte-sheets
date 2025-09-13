@@ -3,6 +3,7 @@
 
   import { Open, Sheet, download } from "../lib";
   import example from "./_example.json";
+  
   let open;
   let currentValue;
   let selected;
@@ -24,14 +25,14 @@
 
 <Open bind:open {onload} />
 
-<button class="btn secondary" on:click={(_) => open.click()}>
+<button class="btn secondary" onclick={(_) => open.click()}>
   <i class="fas fa-folder-open mr-1" />Open .xlsx File
 </button>
 
 {#if sheet}
   <button
     class="btn secondary"
-    on:click={(_) => download(sheets, "example" + ".xlsx")}
+    onclick={(_) => download(sheets, "example" + ".xlsx")}
   >
     <i class="fas fa-download mr-1" />Download file
   </button>
@@ -41,7 +42,7 @@
   <input
     bind:value={sheet.data[decoded.r][decoded.c]}
     style={{ width: "50vw" }}
-    on:change={(v) => console.log("change", v)}
+    onchange={(v) => console.log("change", v)}
   />
   <Sheet
     bind:data={sheet.data}
@@ -61,7 +62,7 @@
 
 <div class="sheet-names">
   {#each sheetNames as sn, i (sn)}
-    <span class:selected={sheet.sheetName == sn} on:click={(_) => (active = i)}
+    <span class:selected={sheet.sheetName == sn} onclick={(_) => (active = i)}
       >{sn}</span
     >
   {/each}

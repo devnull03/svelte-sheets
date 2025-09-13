@@ -682,6 +682,53 @@
     bind:offsetWidth={viewport_width}
     on:scroll={handle_scroll}
   >
+    <div
+      class="top-extend absolute"
+      class:hidden={!extension}
+      bind:this={topextend}
+    />
+    <div
+      class="bottom-extend absolute"
+      class:hidden={!extension}
+      bind:this={bottomextend}
+    />
+    <div
+      class="left-extend absolute"
+      class:hidden={!extension}
+      bind:this={leftextend}
+    />
+    <div
+      class="right-extend absolute"
+      class:hidden={!extension}
+      bind:this={rightextend}
+    />
+    <div class="top-select absolute" bind:this={tops} />
+    <div class="bottom-select absolute" bind:this={bottoms} />
+    <div class="left-select absolute" bind:this={lefts} />
+    <div class="right-select absolute" bind:this={rights} />
+    <div class="col-line absolute" bind:this={colLine} />
+    <div class="row-line absolute" bind:this={rowLine} />
+    <div
+      tabindex={-1}
+      use:draggable
+      on:dragging={(e) => {
+        squareX = e.detail.x;
+        squareY = e.detail.y;
+      }}
+      class="square absolute"
+      id="square"
+      bind:this={square}
+    />
+    <Menu
+      show={!!menuX}
+      x={menuX}
+      y={menuY}
+      copy={(e) => (clipboard = selected)}
+      cut={(e) => (clipboard = selected)}
+      paste={(e) => (data = pasteSelection(data, clipboard, selected))}
+      clear={(e) => (data = clearSelection(data, selected))}
+      delet={(e) => (data = deleteSelection(data, selected))}
+    />
     <table
       cellpadding="0"
       cellspacing="0"
@@ -690,53 +737,6 @@
       style="padding-top: {top}px; padding-bottom: {bottom}px; padding-left: {left}px; padding-right: {right}px;"
       bind:this={contents}
     >
-      <div
-        class="top-extend absolute"
-        class:hidden={!extension}
-        bind:this={topextend}
-      />
-      <div
-        class="bottom-extend absolute"
-        class:hidden={!extension}
-        bind:this={bottomextend}
-      />
-      <div
-        class="left-extend absolute"
-        class:hidden={!extension}
-        bind:this={leftextend}
-      />
-      <div
-        class="right-extend absolute"
-        class:hidden={!extension}
-        bind:this={rightextend}
-      />
-      <div class="top-select absolute" bind:this={tops} />
-      <div class="bottom-select absolute" bind:this={bottoms} />
-      <div class="left-select absolute" bind:this={lefts} />
-      <div class="right-select absolute" bind:this={rights} />
-      <div class="col-line absolute" bind:this={colLine} />
-      <div class="row-line absolute" bind:this={rowLine} />
-      <div
-        tabindex={-1}
-        use:draggable
-        on:dragging={(e) => {
-          squareX = e.detail.x;
-          squareY = e.detail.y;
-        }}
-        class="square absolute"
-        id="square"
-        bind:this={square}
-      />
-      <Menu
-        show={!!menuX}
-        x={menuX}
-        y={menuY}
-        copy={(e) => (clipboard = selected)}
-        cut={(e) => (clipboard = selected)}
-        paste={(e) => (data = pasteSelection(data, clipboard, selected))}
-        clear={(e) => (data = clearSelection(data, selected))}
-        delet={(e) => (data = deleteSelection(data, selected))}
-      />
       <colgroup>
         <col width={50} />
         {#each visibleX as v}

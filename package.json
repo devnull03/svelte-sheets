@@ -5,10 +5,10 @@
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
-    "build": "svelte-kit build",
-    "dev": "svelte-kit dev",
-    "package": "svelte-kit package",
-    "preview": "svelte-kit preview"
+    "build": "svelte-kit sync && vite build",
+    "dev": "vite dev",
+    "package": "svelte-kit sync && svelte-package", 
+    "preview": "vite preview"
   },
   "keywords": [
     "svelte",
@@ -19,23 +19,23 @@
   "author": "Thibaut Duchêne",
   "license": "MIT",
   "devDependencies": {
-    "@sveltejs/adapter-auto": "next",
-    "@sveltejs/adapter-static": "^1.0.0-next.30",
-    "@sveltejs/kit": "next",
+    "@sveltejs/adapter-auto": "^6.1.0",
+    "@sveltejs/adapter-static": "^3.0.9",
+    "@sveltejs/kit": "^2.39.1",
     "@tsconfig/svelte": "^3.0.0",
     "prettier": "^2.5.1",
-    "prettier-plugin-svelte": "^2.5.0",
-    "svelte": "^3.44.0",
-    "svelte-check": "^2.2.6",
-    "svelte-preprocess": "^4.10.1",
+    "prettier-plugin-svelte": "^3.4.0",
+    "svelte": "^5.38.10",
+    "svelte-check": "^4.3.1",
+    "svelte-preprocess": "^6.0.3",
     "svelte2tsx": "^0.5.10",
     "tslib": "^2.3.1",
     "typescript": "~4.6.2"
   },
   "peerDependencies": {
-    "xlsx": "^0.16.9",
     "b64-to-blob": "^1.2.19",
-    "hotkeys-js": "^3.8.1"
+    "hotkeys-js": "^3.8.1",
+    "xlsx": "^0.16.9"
   },
   "dependencies": {
     "b64-to-blob": "^1.2.19",
