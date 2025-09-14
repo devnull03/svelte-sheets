@@ -5,23 +5,34 @@
     <link rel="icon" href="/svelte-sheets/favicon.png" />
     <link rel="stylesheet" href="/svelte-sheets/global.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta http-equiv="content-security-policy" content="">
-	<link rel="modulepreload" href="/svelte-sheets/_app/start-869b4509.js">
-	<link rel="modulepreload" href="/svelte-sheets/_app/chunks/index-54ee1bf0.js">
+    
+		<link rel="modulepreload" href="/svelte-sheets/_app/immutable/entry/start.DeOnCafb.js">
+		<link rel="modulepreload" href="/svelte-sheets/_app/immutable/chunks/_gxzArfB.js">
+		<link rel="modulepreload" href="/svelte-sheets/_app/immutable/chunks/TfVkM2-0.js">
+		<link rel="modulepreload" href="/svelte-sheets/_app/immutable/chunks/CSyUJhbO.js">
+		<link rel="modulepreload" href="/svelte-sheets/_app/immutable/entry/app.WZQwmuOR.js">
+		<link rel="modulepreload" href="/svelte-sheets/_app/immutable/chunks/DsnmJJEf.js">
+		<link rel="modulepreload" href="/svelte-sheets/_app/immutable/chunks/2rJML2v6.js">
   </head>
-  <body>
-    <div>
-		<script type="module" data-hydrate="45h">
-		import { start } from "/svelte-sheets/_app/start-869b4509.js";
-		start({
-			target: document.querySelector('[data-hydrate="45h"]').parentNode,
-			paths: {"base":"/svelte-sheets","assets":"/svelte-sheets"},
-			session: {},
-			route: true,
-			spa: true,
-			trailing_slash: "never",
-			hydrate: null
-		});
-	</script></div>
+  <body data-sveltekit-preload-data="hover">
+    <div style="display: contents">
+			<script>
+				{
+					__sveltekit_1ba6jap = {
+						base: "/svelte-sheets",
+						assets: "/svelte-sheets"
+					};
+
+					const element = document.currentScript.parentElement;
+
+					Promise.all([
+						import("/svelte-sheets/_app/immutable/entry/start.DeOnCafb.js"),
+						import("/svelte-sheets/_app/immutable/entry/app.WZQwmuOR.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element);
+					});
+				}
+			</script>
+		</div>
   </body>
 </html>
